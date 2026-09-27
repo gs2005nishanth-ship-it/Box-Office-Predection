@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMetric AI | Box Office Intelligence & ML Revenue Predictor</title>
+    <meta name="description" content="AI & Machine Learning Box Office Intelligence Dashboard. Ask for any movie to get instant box office collections, ROI analysis, and predict revenue for custom films.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="dark-theme">
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-film"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">Cine<span class="highlight">Metric</span> AI</span>
+                    <span class="brand-subtitle">Box Office Intelligence Hub</span>
+                </div>
+            </div>
+
+            <!-- Nav Tabs -->
+            <nav class="nav-tabs" role="tablist">
+                <button class="nav-tab active" data-tab="tab-llm" id="tab-btn-llm">
+                    <i class="fa-solid fa-sparkles"></i> <span>Ask Any Movie</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-ml" id="tab-btn-ml">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>ML Predictor</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-eda" id="tab-btn-eda">
+                    <i class="fa-solid fa-chart-mixed"></i> <span>EDA Analytics</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-models" id="tab-btn-models">
+                    <i class="fa-solid fa-brain"></i> <span>ML Models</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-dataset" id="tab-btn-dataset">
+                    <i class="fa-solid fa-table-list"></i> <span>Dataset Explorer</span>
+                </button>
+            </nav>
+
+            <!-- Nav Right Actions -->
+            <div class="nav-actions">
+                <div class="status-indicator" title="ML Pipeline & Knowledge Base Active">
+                    <span class="status-dot"></span>
+                    <span class="status-label">AI Ready</span>
+                </div>
+                <button class="btn btn-outline btn-sm" id="open-settings-btn" title="Configure LLM API Key">
+                    <i class="fa-solid fa-gear"></i> <span>AI Config</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+        
+        <!-- Hero Metrics Banner -->
+        <section class="hero-banner">
+            <div class="hero-left">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-clapperboard"></i> TMDB 7,398+ Movies & Global Box Office Intelligence
+                </div>
+                <h1 class="hero-heading">Instant Box Office Collections & <span class="gradient-text">AI Financial Analysis</span></h1>
+                <p class="hero-subtext">Search any film in history to inspect verified collections, budgets, and ROI breakdowns, or simulate box office returns with trained Machine Learning models.</p>
+            </div>
+            <div class="hero-stats-grid">
+                <div class="hero-stat-card">
+                    <div class="stat-icon gold"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="stat-content">
+                        <span class="stat-val">$2.92B</span>
+                        <span class="stat-desc">Top Record (Avatar)</span>
+                    </div>
+                </div>
+                <div class="hero-stat-card">
+                    <div class="stat-icon emerald"><i class="fa-solid fa-robot"></i></div>
+                    <div class="stat-content">
+                        <span class="stat-val">GradientBoost</span>
+                        <span class="stat-desc">Top ML Model (R² 0.70)</span>
+                    </div>
+                </div>
+                <div class="hero-stat-card">
+                    <div class="stat-icon sky"><i class="fa-solid fa-database"></i></div>
+                    <div class="stat-content">
+                        <span class="stat-val">7,398</span>
+                        <span class="stat-desc">Train & Test Dataset</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 1: ASK ANY MOVIE (LLM & KNOWLEDGE BASE ENGINE)            -->
+        <!-- ============================================================== -->
+        <section id="tab-llm" class="tab-panel active">
+            <div class="section-card search-card">
+                <div class="search-header">
+                    <div class="section-title-wrap">
+                        <span class="section-badge"><i class="fa-solid fa-bolt"></i> LLM Movie Search</span>
+                        <h2>Ask for Any Movie's Box Office Collection</h2>
+                        <p class="section-desc">Type any movie title to generate verified worldwide box office gross, budget, domestic vs overseas split, ROI, and AI financial analysis.</p>
+                    </div>
+                </div>
+
+                <!-- Movie Search Bar -->
+                <form id="movie-search-form" class="search-bar-form">
+                    <div class="search-input-group">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="movie-search-input" placeholder="Enter any movie (e.g. Oppenheimer, Avatar 2, Dune 2, Barbie, RRR, Inception, Titanic)..." autocomplete="off" required>
+                        <button type="submit" class="btn btn-primary btn-search" id="btn-search-movie">
+                            <span class="btn-text"><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Movie</span>
+                            <span class="btn-loader d-none"><i class="fa-solid fa-spinner fa-spin"></i> Analyzing...</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Quick Query Suggestions / Chips -->
+                <div class="quick-chips">
+                    <span class="chips-label"><i class="fa-solid fa-fire"></i> Trending & Popular:</span>
+                    <div class="chips-list">
+                        <button type="button" class="chip-btn" data-query="Oppenheimer">Oppenheimer</button>
+                        <button type="button" class="chip-btn" data-query="Avatar: The Way of Water">Avatar 2</button>
+                        <button type="button" class="chip-btn" data-query="Barbie">Barbie</button>
+                        <button type="button" class="chip-btn" data-query="Dune: Part Two">Dune 2</button>
+                        <button type="button" class="chip-btn" data-query="Avengers: Endgame">Avengers: Endgame</button>
+                        <button type="button" class="chip-btn" data-query="Top Gun: Maverick">Top Gun: Maverick</button>
+                        <button type="button" class="chip-btn" data-query="Inside Out 2">Inside Out 2</button>
+                        <button type="button" class="chip-btn" data-query="Deadpool & Wolverine">Deadpool & Wolverine</button>
+                        <button type="button" class="chip-btn" data-query="RRR">RRR</button>
+                        <button type="button" class="chip-btn" data-query="Inception">Inception</button>
+                        <button type="button" class="chip-btn" data-query="The Dark Knight">The Dark Knight</button>
+                        <button type="button" class="chip-btn" data-query="Parasite">Parasite</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="movie-loading-state" class="loading-state d-none">
+                <div class="spinner-ring"></div>
+                <h3 class="loading-title">Extracting Box Office Metrics & Generating AI Analysis...</h3>
+                <p class="loading-sub">Connecting to Box Office Knowledge Base & LLM Engine</p>
+            </div>
+
+            <!-- Movie Result Presentation Container -->
+            <div id="movie-result-container" class="movie-result-container d-none">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- TAB 2: ML REVENUE PREDICTOR (INTERACTIVE SIMULATOR)           -->
+        <!-- ============================================================== -->
+        <section id="tab-ml" class="tab-panel">
+            <div class="grid-2-col">
+                
+                <!-- Input Form Card -->
+                <div class="section-card">
+                    <div class="section-title-wrap">
+                        <span class="section-badge"><i class="fa-solid fa-sliders"></i> Machine Learning Simulator</span>
+                        <h2>Simulate Movie Box Office</h2>
+                        <p class="section-desc">Configure film parameters to predict expected theatrical gross using trained Gradient Boosting & Random Forest models.</p>
+                    </div>
+
+                    <form id="ml-predict-form" class="predict-form">
+                        <!-- Movie Title -->
+                        <div class="form-group">
+                            <label for="sim-title"><i class="fa-solid fa-heading"></i> Working Movie Title</label>
+                            <input type="text" id="sim-title" class="form-control" value="Cosmic Odyssey: The Final Frontier" placeholder="Enter movie title...">
+                        </div>
+
+                        <!-- Budget Slider -->
+                        <div class="form-group">
+                            <div class="slider-header">
+                                <label for="sim-budget"><i class="fa-solid fa-money-bill-wave"></i> Production Budget</label>
+                                <span class="slider-value-badge" id="budget-val-badge">$125,000,000</span>
+                            </div>
+                            <input type="range" id="sim-budget" min="1000000" max="350000000" step="1000000" value="125000000" class="range-slider">
+                            <div class="slider-ticks">
+                                <span>$1M (Indie)</span>
+                                <span>$50M (Mid)</span>
+                                <span>$150M (Major)</span>
+                                <span>$350M (Tentpole)</span>
+                            </div>
+                        </div>
+
+                        <!-- Runtime Slider -->
+                        <div class="form-group">
+                            <div class="slider-header">
+                                <label for="sim-runtime"><i class="fa-solid fa-clock"></i> Runtime (Minutes)</label>
+                                <span class="slider-value-badge" id="runtime-val-badge">128 min</span>
+                            </div>
+                            <input type="range" id="sim-runtime" min="60" max="220" step="1" value="128" class="range-slider">
+                            <div class="slider-ticks">
+                                <span>60 min</span>
+                                <span>105 min</span>
+                                <span>140 min</span>
+                                <span>220 min</span>
+                            </div>
+                        </div>
+
+                        <!-- Popularity & Release Timing Grid -->
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="sim-popularity"><i class="fa-solid fa-chart-line"></i> Pre-Release Popularity Index</label>
+                                <input type="number" id="sim-popularity" class="form-control" min="1" max="200" value="38" step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-month"><i class="fa-solid fa-calendar-days"></i> Release Window / Season</label>
+                                <select id="sim-month" class="form-control">
+                                    <option value="5" selected>May (Summer Kickoff)</option>
+                                    <option value="6">June (Peak Summer)</option>
+                                    <option value="7">July (Mid Summer)</option>
+                                    <option value="11">November (Thanksgiving)</option>
+                                    <option value="12">December (Holiday Season)</option>
+                                    <option value="2">February (Valentine / President's Day)</option>
+                                    <option value="3">March (Spring Break)</option>
+                                    <option value="4">April (Spring / Easter)</option>
+                                    <option value="8">August (Late Summer)</option>
+                                    <option value="9">September (Fall Season)</option>
+                                    <option value="10">October (Halloween)</option>
+                                    <option value="1">January (Winter Window)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Star Cast Tier & Director Tier -->
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="sim-cast-tier"><i class="fa-solid fa-users"></i> Lead Cast Power</label>
+                                <select id="sim-cast-tier" class="form-control">
+                                    <option value="Superstars (A-List)">Global Superstars (A-List)</option>
+                                    <option value="Major Stars" selected>Major Stars & Established Ensemble</option>
+                                    <option value="Rising Talents">Rising Talents / Indie Cast</option>
+                                    <option value="Unknown">Unknown / Newcomer Cast</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-director-tier"><i class="fa-solid fa-bullhorn"></i> Director Recognition</label>
+                                <select id="sim-director-tier" class="form-control">
+                                    <option value="Top Tier A-List" selected>Visionary A-List Director</option>
+                                    <option value="Experienced">Experienced Commercial Director</option>
+                                    <option value="Debut">Debut / Emerging Director</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Franchise & Digital switches -->
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="sim-collection" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label"><i class="fa-solid fa-cubes"></i> Part of Franchise / Collection</span>
+                            </label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="sim-homepage" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label"><i class="fa-solid fa-globe"></i> Active Dedicated Website & Digital Campaign</span>
+                            </label>
+                        </div>
+
+                        <!-- Genre Multi-Select Badges -->
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-tags"></i> Movie Genres (Select 1 to 4):</label>
+                            <div class="genre-selector" id="genre-checkboxes">
+                                <label class="genre-tag selected"><input type="checkbox" value="Action" checked> Action</label>
+                                <label class="genre-tag selected"><input type="checkbox" value="Adventure" checked> Adventure</label>
+                                <label class="genre-tag selected"><input type="checkbox" value="Science Fiction" checked> Sci-Fi</label>
+                                <label class="genre-tag"><input type="checkbox" value="Drama"> Drama</label>
+                                <label class="genre-tag"><input type="checkbox" value="Comedy"> Comedy</label>
+                                <label class="genre-tag"><input type="checkbox" value="Thriller"> Thriller</label>
+                                <label class="genre-tag"><input type="checkbox" value="Animation"> Animation</label>
+                                <label class="genre-tag"><input type="checkbox" value="Fantasy"> Fantasy</label>
+                                <label class="genre-tag"><input type="checkbox" value="Horror"> Horror</label>
+                                <label class="genre-tag"><input type="checkbox" value="Romance"> Romance</label>
+                                <label class="genre-tag"><input type="checkbox" value="Crime"> Crime</label>
+                                <label class="genre-tag"><input type="checkbox" value="Mystery"> Mystery</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-predict-ml">
+                            <i class="fa-solid fa-circle-play"></i> Run ML Box Office Prediction
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Output Prediction Card -->
+                <div class="section-card prediction-output-card">
+                    <div class="section-title-wrap">
+                        <span class="section-badge"><i class="fa-solid fa-gauge-high"></i> Simulation Results</span>
+                        <h2>Box Office Forecast</h2>
+                        <p class="section-desc">Model estimated theatrical revenue, return on investment, and commercial profitability tier.</p>
+                    </div>
+
+                    <div id="ml-prediction-result">
+                        <!-- Initial Placeholder or Live Injected Result -->
+                        <div class="prediction-hero-box">
+                            <span class="prediction-label">Estimated Worldwide Box Office</span>
+                            <div class="prediction-big-num" id="pred-revenue-display">$384,500,000</div>
+                            <div class="prediction-range-wrap">
+                                <span class="range-pill"><i class="fa-solid fa-arrows-left-right"></i> Range: <strong id="pred-range-display">$276.8M - $530.6M</strong></span>
+                            </div>
+                            <div class="prediction-verdict-badge" id="pred-verdict-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981;">
+                                <i class="fa-solid fa-circle-check"></i> Super Hit (Blockbuster Potential)
+                            </div>
+                        </div>
+
+                        <!-- Metric Highlights -->
+                        <div class="pred-metrics-grid">
+                            <div class="pred-metric-box">
+                                <span class="p-metric-label">Estimated ROI</span>
+                                <span class="p-metric-value emerald" id="pred-roi-display">+207.6%</span>
+                            </div>
+                            <div class="pred-metric-box">
+                                <span class="p-metric-label">Profit Multiplier</span>
+                                <span class="p-metric-value gold" id="pred-multiplier-display">3.08x</span>
+                            </div>
+                            <div class="pred-metric-box">
+                                <span class="p-metric-label">Estimated Profit</span>
+                                <span class="p-metric-value sky" id="pred-profit-display">+$259.5M</span>
+                            </div>
+                            <div class="pred-metric-box">
+                                <span class="p-metric-label">Model Architecture</span>
+                                <span class="p-metric-value violet" id="pred-model-display">Gradient Boosting</span>
+                            </div>
+                        </div>
+
+                        <!-- Breakdown explanation -->
+                        <div class="analysis-box">
+                            <h4><i class="fa-solid fa-chart-pie"></i> Revenue Factors & Sensitivity:</h4>
+                            <ul class="analysis-list" id="pred-factors-list">
+                                <li><strong>Franchise Multiplier:</strong> Being linked to an existing IP/collection elevates median gross by ~210% over standalone films.</li>
+                                <li><strong>Summer Window Advantage:</strong> May release captures high weekend family traffic and prime IMAX theatrical footprints.</li>
+                                <li><strong>Budget Leverage:</strong> High $125M investment enables international distribution in 85+ global territories.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- TAB 3: EXPLORATORY DATA ANALYSIS (EDA CHARTS)                  -->
+        <!-- ============================================================== -->
+        <section id="tab-eda" class="tab-panel">
+            <div class="eda-header-banner">
+                <div class="section-title-wrap">
+                    <span class="section-badge"><i class="fa-solid fa-chart-line"></i> Exploratory Data Analysis</span>
+                    <h2>Box Office Trends & Macro Patterns</h2>
+                    <p class="section-desc">Interactive data visualizations derived from the 7,398 TMDB movie dataset across budget, revenue, genres, seasonality, and franchises.</p>
+                </div>
+            </div>
+
+            <!-- Charts Grid 1 -->
+            <div class="grid-2-col">
+                <!-- Scatter Chart: Budget vs Revenue -->
+                <div class="section-card chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-arrow-trend-up"></i> Budget vs Worldwide Revenue</h3>
+                        <span class="chart-badge">Logarithmic Trend</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="budgetRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Bar Chart: Average Revenue by Genre -->
+                <div class="section-card chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-clapperboard"></i> Top Box Office Genres by Avg Gross</h3>
+                        <span class="chart-badge">Average Revenue</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="genreRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid 2 -->
+            <div class="grid-2-col">
+                <!-- Monthly Seasonality Line Chart -->
+                <div class="section-card chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-calendar-check"></i> Release Month Seasonality</h3>
+                        <span class="chart-badge">Average Gross per Month</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Franchise Impact Doughnut -->
+                <div class="section-card chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-layer-group"></i> Franchise / Collection Multiplier</h3>
+                        <span class="chart-badge">In Collection vs Solo</span>
+                    </div>
+                    <div class="chart-wrapper doughnut-wrap">
+                        <canvas id="collectionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 10 Highest Grossing Table in Dataset -->
+            <div class="section-card">
+                <div class="chart-header">
+                    <h3><i class="fa-solid fa-crown gold"></i> Top 10 Highest Grossing Movies in Training Dataset</h3>
+                    <span class="chart-badge">Historical Records</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table" id="top-movies-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Movie Title</th>
+                                <th>Year</th>
+                                <th>Budget</th>
+                                <th>Worldwide Gross</th>
+                                <th>ROI Multiplier</th>
+                                <th>Popularity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-movies-tbody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- TAB 4: ML MODELS & KAGGLE BENCHMARKS                           -->
+        <!-- ============================================================== -->
+        <section id="tab-models" class="tab-panel">
+            <div class="section-card">
+                <div class="section-title-wrap">
+                    <span class="section-badge"><i class="fa-solid fa-microchip"></i> Model Benchmarking</span>
+                    <h2>Machine Learning Model Leaderboard & Evaluation</h2>
+                    <p class="section-desc">Comparison of 6 regression architectures trained on 22 engineered features, cross-validated with RMSLE and R² metrics.</p>
+                </div>
+
+                <!-- Metrics Summary Cards -->
+                <div class="model-kpi-grid">
+                    <div class="kpi-card">
+                        <span class="kpi-label">Top Model</span>
+                        <span class="kpi-val emerald" id="kpi-best-model">GradientBoosting</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Validation R² Score</span>
+                        <span class="kpi-val gold">0.7048</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Best RMSLE</span>
+                        <span class="kpi-val sky">1.9907</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-label">Test Samples Generated</span>
+                        <span class="kpi-val violet">4,398 Rows</span>
+                    </div>
+                </div>
+
+                <!-- Model Comparison Table -->
+                <div class="table-responsive" style="margin-top: 1.5rem;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Algorithm / Pipeline</th>
+                                <th>RMSLE (Log Error)</th>
+                                <th>R² Score</th>
+                                <th>RMSE ($ Millions)</th>
+                                <th>MAE ($ Millions)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="models-table-tbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Feature Importance & Kaggle Submission Grid -->
+            <div class="grid-2-col">
+                <!-- Feature Importance Chart -->
+                <div class="section-card chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-ranking-star"></i> Feature Importance (Gradient Boosting)</h3>
+                        <span class="chart-badge">Gini Gain</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="featureImportanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Submission CSV Card -->
+                <div class="section-card submission-card">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-file-csv"></i> Test Dataset Submission File</h3>
+                        <span class="chart-badge">submission.csv</span>
+                    </div>
+                    <p class="section-desc">Predictions generated for all 4,398 test movies using our top-performing Gradient Boosting Regressor.</p>
+                    
+                    <div class="download-action-wrap">
+                        <a href="/download/submission" class="btn btn-emerald btn-lg">
+                            <i class="fa-solid fa-download"></i> Download submission.csv (4,398 Rows)
+                        </a>
+                    </div>
+
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 0.95rem; color: #94a3b8;">
+                        <i class="fa-solid fa-table"></i> First 10 Sample Predictions:
+                    </h4>
+                    <div class="table-responsive">
+                        <table class="data-table sample-sub-table">
+                            <thead>
+                                <tr>
+                                    <th>Movie ID</th>
+                                    <th>Predicted Revenue ($)</th>
+                                    <th>Formatted</th>
+                                </tr>
+                            </thead>
+                            <tbody id="submission-preview-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- TAB 5: TMDB DATASET EXPLORER                                  -->
+        <!-- ============================================================== -->
+        <section id="tab-dataset" class="tab-panel">
+            <div class="section-card">
+                <div class="section-title-wrap">
+                    <span class="section-badge"><i class="fa-solid fa-database"></i> Database Browser</span>
+                    <h2>Explore TMDB Box Office Dataset</h2>
+                    <p class="section-desc">Search, filter, and inspect movies in the training dataset.</p>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="dataset-filter-bar">
+                    <div class="filter-input-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="dataset-search-input" placeholder="Search by movie title...">
+                    </div>
+                    <div class="filter-select-wrap">
+                        <select id="dataset-genre-filter">
+                            <option value="">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Science Fiction">Sci-Fi</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Animation">Animation</option>
+                            <option value="Family">Family</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dataset Table -->
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Release Date</th>
+                                <th>Runtime</th>
+                                <th>Budget</th>
+                                <th>Revenue</th>
+                                <th>Popularity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataset-table-tbody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-wrap">
+                    <span class="pagination-info" id="pagination-info">Showing 1 - 15 of 3,000 movies</span>
+                    <div class="pagination-btns">
+                        <button class="btn btn-outline btn-sm" id="btn-prev-page" disabled><i class="fa-solid fa-chevron-left"></i> Previous</button>
+                        <button class="btn btn-outline btn-sm" id="btn-next-page">Next <i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>© 2026 CineMetric AI — Advanced Box Office Prediction & Movie Intelligence Hub.</p>
+            <p class="footer-sub">Powered by Scikit-Learn Machine Learning & Large Language Model Intelligence.</p>
+        </div>
+    </footer>
+
+    <!-- AI Settings Modal -->
+    <div id="settings-modal" class="modal-backdrop d-none">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gear gold"></i> AI & LLM Engine Settings</h3>
+                <button class="modal-close-btn" id="close-settings-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">
+                    Connect your live LLM API key (OpenAI, Google Gemini, or Groq) to enable unrestricted real-time AI Box Office financial generation for any newly released or upcoming movie.
+                </p>
+                <form id="api-key-form">
+                    <div class="form-group">
+                        <label for="llm-provider"><i class="fa-solid fa-server"></i> LLM Provider</label>
+                        <select id="llm-provider" class="form-control">
+                            <option value="openai" selected>OpenAI (GPT-4o / GPT-4o-mini)</option>
+                            <option value="gemini">Google Gemini (Gemini 1.5 Flash)</option>
+                            <option value="groq">Groq (Llama 3.3 70B Fast)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="llm-api-key"><i class="fa-solid fa-key"></i> API Key</label>
+                        <input type="password" id="llm-api-key" class="form-control" placeholder="sk-..." autocomplete="off">
+                        <small class="form-hint">Stored strictly in-memory during this active server session.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="llm-model-name"><i class="fa-solid fa-microchip"></i> Model Override (Optional)</label>
+                        <input type="text" id="llm-model-name" class="form-control" placeholder="Default: gpt-4o-mini">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" id="cancel-settings-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="save-settings-btn">
+                            <i class="fa-solid fa-floppy-disk"></i> Save & Connect
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
