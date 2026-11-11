@@ -8,16 +8,19 @@ from llm_engine import get_llm_engine
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config['SECRET_KEY'] = 'box-office-super-secret-key-2026'
 
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+os.makedirs(DATA_DIR, exist_ok=True)
+
 # Initialize engines
-ml_engine = get_ml_engine()
+ml_engine = get_ml_engine(data_dir=DATA_DIR)
 llm_engine = get_llm_engine()
 
 # Load raw train data for dataset browser (cached in memory)
 train_df_raw = None
 def get_train_df():
     global train_df_raw
-    if train_df_raw is None and os.path.exists('train.csv'):
-        df = pd.read_csv('train.csv')
+    if train_df_raw is None and os.path.exists(os.path.join(DATA_DIR, 'train.csv')):
+        df = pd.read_csv(os.path.join(DATA_DIR, 'train.csv'))
         df['budget'] = df['budget'].fillna(0)
         df['revenue'] = df['revenue'].fillna(0)
         df['popularity'] = df['popularity'].fillna(0)
@@ -117,7 +120,7 @@ def get_movies():
 
 @app.route('/api/submission-preview', methods=['GET'])
 def submission_preview():
-    sub_path = 'submission.csv'
+    sub_path = os.path.join(DATA_DIR, 'submission.csv')
     if not os.path.exists(sub_path):
         return jsonify({'status': 'error', 'message': 'submission.csv not generated yet.'}), 404
 
@@ -131,7 +134,7 @@ def submission_preview():
 
 @app.route('/download/submission', methods=['GET'])
 def download_submission():
-    sub_path = 'submission.csv'
+    sub_path = os.path.join(DATA_DIR, 'submission.csv')
     if os.path.exists(sub_path):
         return send_file(sub_path, as_attachment=True, download_name='submission.csv')
     return jsonify({'error': 'submission.csv file not found.'}), 404

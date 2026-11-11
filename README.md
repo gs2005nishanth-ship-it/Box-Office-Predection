@@ -26,7 +26,7 @@ An end-to-end Machine Learning and Generative AI platform for worldwide movie bo
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/<your-repo-name>.git
+git clone https://github.com/gs2005nishanth-ship-it/Box-Office-Predection.git
 cd <your-repo-name>
 ```
 
@@ -111,3 +111,231 @@ python test_app.py
 
 ## 📜 License
 MIT License. Free for educational and commercial use.
+
+---
+
+## Docker Deployment
+
+The existing CineMetric AI Flask application is containerized using Docker.
+
+### Docker Architecture
+
+- Docker Image: Packages the application and dependencies.
+- Docker Container: Runs the Flask application.
+- Docker Volume: Stores datasets and model files persistently.
+- Port Mapping: Exposes the application on port 5000.
+
+### Build Docker Image
+
+`docker build -t box-office-prediction .`
+
+### Run Docker Container
+
+`docker run -d --name box-office-app --restart unless-stopped -p 5000:5000 -v box-office-data:/app/data box-office-prediction`
+
+Access the application at http://localhost:5000.
+
+### Persistent Volume Storage
+
+The named volume `box-office-data` is mounted at `/app/data`.
+
+It stores:
+- train.csv
+- test.csv
+- box_office_model.joblib
+- submission.csv
+
+The volume preserves data even when the container is removed.
+
+### Backup and Restore
+
+Create a backup directory using `mkdir -p backups`.
+
+Create a compressed volume backup:
+
+`docker run --rm -v box-office-data:/data:ro -v "$PWD/backups":/backup python:3.12-slim tar -czf /backup/box-office-data-backup.tar.gz -C /data .`
+
+Verify the backup using:
+
+`tar -tzf backups/box-office-data-backup.tar.gz`
+
+Restore into a separate test volume:
+
+`docker volume create box-office-restore-test`
+
+`docker run --rm -v "$PWD/backups":/backup:ro -v box-office-restore-test:/data python:3.12-slim tar -xzf /backup/box-office-data-backup.tar.gz -C /data`
+
+### Useful Docker Commands
+
+| Command | Purpose |
+|---|---|
+| `docker ps` | View running containers |
+| `docker logs box-office-app` | View application logs |
+| `docker stop box-office-app` | Stop the container |
+| `docker start box-office-app` | Start the container |
+| `docker volume ls` | List Docker volumes |
+| `docker images` | List Docker images |
+
+### Testing and Validation
+
+The following operations were tested successfully:
+
+- Docker image built successfully.
+- Flask application launched inside the container.
+- Website accessed through port 5000.
+- Volume data persisted after container removal.
+- Backup archive created and verified.
+- Backup restored into a separate test volume.
+
+
+---
+
+## Docker Deployment
+
+The existing CineMetric AI Flask application is containerized using Docker.
+
+### Docker Architecture
+
+- Docker Image: Packages the application and dependencies.
+- Docker Container: Runs the Flask application.
+- Docker Volume: Stores datasets and model files persistently.
+- Port Mapping: Exposes the application on port 5000.
+
+### Build Docker Image
+
+`docker build -t box-office-prediction .`
+
+### Run Docker Container
+
+`docker run -d --name box-office-app --restart unless-stopped -p 5000:5000 -v box-office-data:/app/data box-office-prediction`
+
+Access the application at http://localhost:5000.
+
+### Persistent Volume Storage
+
+The named volume `box-office-data` is mounted at `/app/data`.
+
+It stores:
+- train.csv
+- test.csv
+- box_office_model.joblib
+- submission.csv
+
+The volume preserves data even when the container is removed.
+
+### Backup and Restore
+
+Create a backup directory using `mkdir -p backups`.
+
+Create a compressed volume backup:
+
+`docker run --rm -v box-office-data:/data:ro -v "$PWD/backups":/backup python:3.12-slim tar -czf /backup/box-office-data-backup.tar.gz -C /data .`
+
+Verify the backup using:
+
+`tar -tzf backups/box-office-data-backup.tar.gz`
+
+Restore into a separate test volume:
+
+`docker volume create box-office-restore-test`
+
+`docker run --rm -v "$PWD/backups":/backup:ro -v box-office-restore-test:/data python:3.12-slim tar -xzf /backup/box-office-data-backup.tar.gz -C /data`
+
+### Useful Docker Commands
+
+| Command | Purpose |
+|---|---|
+| `docker ps` | View running containers |
+| `docker logs box-office-app` | View application logs |
+| `docker stop box-office-app` | Stop the container |
+| `docker start box-office-app` | Start the container |
+| `docker volume ls` | List Docker volumes |
+| `docker images` | List Docker images |
+
+### Testing and Validation
+
+The following operations were tested successfully:
+
+- Docker image built successfully.
+- Flask application launched inside the container.
+- Website accessed through port 5000.
+- Volume data persisted after container removal.
+- Backup archive created and verified.
+- Backup restored into a separate test volume.
+
+
+---
+
+## Docker Deployment
+
+The existing CineMetric AI Flask application is containerized using Docker.
+
+### Docker Architecture
+
+- Docker Image: Packages the application and dependencies.
+- Docker Container: Runs the Flask application.
+- Docker Volume: Stores datasets and model files persistently.
+- Port Mapping: Exposes the application on port 5000.
+
+### Build Docker Image
+
+`docker build -t box-office-prediction .`
+
+### Run Docker Container
+
+`docker run -d --name box-office-app --restart unless-stopped -p 5000:5000 -v box-office-data:/app/data box-office-prediction`
+
+Access the application at http://localhost:5000.
+
+### Persistent Volume Storage
+
+The named volume `box-office-data` is mounted at `/app/data`.
+
+It stores:
+- train.csv
+- test.csv
+- box_office_model.joblib
+- submission.csv
+
+The volume preserves data even when the container is removed.
+
+### Backup and Restore
+
+Create a backup directory using `mkdir -p backups`.
+
+Create a compressed volume backup:
+
+`docker run --rm -v box-office-data:/data:ro -v "$PWD/backups":/backup python:3.12-slim tar -czf /backup/box-office-data-backup.tar.gz -C /data .`
+
+Verify the backup using:
+
+`tar -tzf backups/box-office-data-backup.tar.gz`
+
+Restore into a separate test volume:
+
+`docker volume create box-office-restore-test`
+
+`docker run --rm -v "$PWD/backups":/backup:ro -v box-office-restore-test:/data python:3.12-slim tar -xzf /backup/box-office-data-backup.tar.gz -C /data`
+
+### Useful Docker Commands
+
+| Command | Purpose |
+|---|---|
+| `docker ps` | View running containers |
+| `docker logs box-office-app` | View application logs |
+| `docker stop box-office-app` | Stop the container |
+| `docker start box-office-app` | Start the container |
+| `docker volume ls` | List Docker volumes |
+| `docker images` | List Docker images |
+
+### Testing and Validation
+
+The following operations were tested successfully:
+
+- Docker image built successfully.
+- Flask application launched inside the container.
+- Website accessed through port 5000.
+- Volume data persisted after container removal.
+- Backup archive created and verified.
+- Backup restored into a separate test volume.
+

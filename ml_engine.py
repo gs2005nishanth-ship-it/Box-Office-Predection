@@ -480,13 +480,16 @@ class BoxOfficeMLEngine:
 # Singleton accessor
 _engine_instance = None
 
-def get_ml_engine(data_dir='.'):
+def get_ml_engine(data_dir='/app/data'):
     global _engine_instance
     if _engine_instance is None:
         save_path = os.path.join(data_dir, 'box_office_model.joblib')
         if os.path.exists(save_path):
             try:
                 _engine_instance = joblib.load(save_path)
+                _engine_instance.data_dir = data_dir
+                _engine_instance.train_path = os.path.join(data_dir, 'train.csv')
+                _engine_instance.test_path = os.path.join(data_dir, 'test.csv')
             except Exception:
                 _engine_instance = BoxOfficeMLEngine(data_dir=data_dir)
                 _engine_instance.train()
